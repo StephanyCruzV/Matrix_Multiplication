@@ -3,6 +3,8 @@
 #include <time.h>
 #include <immintrin.h>
 
+// Compile command: 
+
 #pragma warning(disable:4996)
 
 int main()
