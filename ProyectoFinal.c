@@ -7,48 +7,49 @@
 
 int main()
 {
-    //Variables
+    //Declare general variables
     int rowA, colA,rowB, colB;
     int sizeA = 0, sizeB = 0, sizeC = 0;
 
-    //Files
+    //Files to be used
     FILE* FileA;
     FILE* FileB;
     FILE* FileC;
 
-    //Read files
+    //Read each matrix 
     FileA = fopen("matrizA.txt", "r");
     FileB = fopen("matrizB.txt", "r");
     FileC = fopen("matrizC.txt", "w+");
 
-    //Check if there files could be open
+    //Validate if files can be opened
     if (FileA == NULL) {
-        printf("Couldn't open file matrizA.");
+        printf("Error: Couldn't open file matrizA.");
         return 1;
     }
     if (FileB == NULL) {
-        printf("Couldn't open file matrizB.");
+        printf("Error: Couldn't open file matrizB.");
         return 1;
     }
     if (FileC == NULL) {
-        printf("Couldn't open file matrizC.");
+        printf("Error: Couldn't open file matrizC.");
         return 1;
     }
 
-    //Request the matrices sizes
-    printf("Matrix A rows\n");
+    //Read A matrix dimensions
+    printf("Matrix A rows: \n");
     scanf("%d", &rowA);
-    printf("Matrix A columns\n");
+    printf("Matrix A columns: \n");
     scanf("%d", &colA);
-    printf("Matrix B rows\n");
+    //Read B matrix dimensions
+    printf("Matrix B rows: \n");
     scanf("%d", &rowB);
-    printf("Matrix B columns\n");
+    printf("Matrix B columns: \n");
     scanf("%d", &colB);
 
     //Check if matrices are compatible for multiplication
     if (colA != rowB)
     {
-        printf("Matrices not compatible for multiplication\n");
+        printf("Error: Matrices not compatible for multiplication\n");
         exit(EXIT_SUCCESS);
     }
 
@@ -56,31 +57,31 @@ int main()
     sizeA = rowA * colA;
     sizeB = rowB * colB;
 
-    //Align the space to store the data
+    //Align memory for matrix data A
     double* A = (double*)aligned_alloc(256,colA * rowA * sizeof(double));
     if (A == NULL)
     {
-        printf("Not sufficent memory\n");
+        printf("Error: Not sufficent memory\n");
         free(A);
         exit(EXIT_SUCCESS);
     }
 
-
+    //Align memory for matrix data A
     double* B = (double*)aligned_alloc(256, colB * rowB * sizeof(double));
     if (B == NULL)
     {
-        printf("Not sufficent memory\n");
+        printf("Error: Not sufficent memory\n");
         free(A);
         free(B);
         
         exit(EXIT_SUCCESS);
     }
 
-
+    //Align memory for matrix data A
     double* C = (double*)aligned_alloc(256, colB * rowA * sizeof(double));
     if (C == NULL)
     {
-        printf("Not sufficent memor\n");
+        printf("Error: Not sufficent memor\n");
         free(A);
         free(B);
         free(C);
@@ -149,8 +150,9 @@ int main()
         exit(EXIT_SUCCESS);
     }
     
-
-    //Secuential
+    /* *********************************************************
+                START SECUENTIAL PROCESS
+    ********************************************************** */
     clock_t start_t_secuencial[5] = { 0 };
     clock_t end_t_secuencial[5] = { 0 };
     #pragma loop (no vector)
@@ -168,7 +170,7 @@ int main()
         end_t_secuencial[a] = clock();
     }
     
-    //Impresion Matriz Secuencial
+    //Save C matrix calculated with serial process
     printf("\n Printing Matrix C \n");
     for (int i = 0; i < rowA; i++)
     {
@@ -178,14 +180,22 @@ int main()
             fprintf(FileC, "%0.10f\n", C[i * colB + j]);
         }
     }
+    /* ******* END SECUENTIAL PROCESS ******* */
 
-    //Promedio secuencial
+    //Secuential mean (calculo del promedio)
     double total_sec = 0;
     double total_t_secuencial[5] = { 0 };
     for (int a = 0; a < 5; a++) {
         total_t_secuencial[a] = ((double)(end_t_secuencial[a] - start_t_secuencial[a])) / CLOCKS_PER_SEC;
         total_sec += total_t_secuencial[a];
 	}
+
+    /* *********************************************************
+                START INTRINSECS VECTORIZATION PROCESS
+    ********************************************************** */
+    
+    /* ******* END INTRINSEC VECTORIZATION PROCESS ******* */
+
 
     double promedio_sec = total_sec / 5;
 
