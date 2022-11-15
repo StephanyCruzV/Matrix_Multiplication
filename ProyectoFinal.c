@@ -1,4 +1,6 @@
 #include<stdio.h>
+#include <omp.h>
+#include <unistd.h>
 #include<stdlib.h>
 #include <time.h>
 #include <immintrin.h>
@@ -80,10 +82,21 @@ int main()
     double* C = (double*)aligned_alloc(256, colB * rowA * sizeof(double));
     if (C == NULL)
     {
-        printf("Not sufficent memor\n");
+        printf("Not sufficent memory\n");
         free(A);
         free(B);
         free(C);
+        exit(EXIT_SUCCESS);
+    }
+
+    double* C_omp = (double*)aligned_alloc(256, colB * rowA * sizeof(double));
+    if (C == NULL)
+    {
+        printf("Not sufficent memory\n");
+        free(A);
+        free(B);
+        free(C);
+        free(C_omp);
         exit(EXIT_SUCCESS);
     }
 
@@ -167,6 +180,53 @@ int main()
         }
         end_t_secuencial[a] = clock();
     }
+
+    //OpenMp
+    clock_t start_t_open[5] = { 0 };
+    clock_t end_t_open[5] = { 0 };
+    int it=0;
+    it=(rowA*colB)/16;
+    for (int a = 0; a < 5; a++) {
+        start_t_open[a] = clock();
+        #pragma omp parallel num_threads(16)
+       {
+	    int idx,idy,lx,ly;
+	    int nextJump;
+   	    int thread;
+
+	    thread=omp_get_thread_num();
+            idx=(it*thread)/colB;
+            idy=(it*thread)%colB;
+
+            nextJump=it*(thread+1);
+	    
+	    lx=(nextJump/colB);
+            if(nextJump%colB==0){
+                ly=colB;
+            }
+            else{
+                ly=(nextJump%colB);
+            }
+            for (int i = idx; i < lx; i++)
+            {
+		int begJ;
+		if(i==idx)
+	            begJ=idy;
+	        else
+                    begJ=0;
+                for (int j=begJ; j < colB; j++)
+                {
+		    if((i+1)==lx && j==ly){
+			break;
+			}
+                    C_omp[i * colB + j] = 0;
+                    for (int k = 0; k < rowB; k++)
+                        C_omp[i * colB + j] += (A[i * colA + k] * B[j * rowB + k]);
+                }
+            }
+        }
+        end_t_open[a] = clock();
+    }
     
     //Impresion Matriz Secuencial
     printf("\n Printing Matrix C \n");
@@ -175,7 +235,7 @@ int main()
         //printf("\n");
         for (int j = 0; j < colB; j++) {
             //printf(" C: %0.10f ", C[i * colB + j]);
-            fprintf(FileC, "%0.10f\n", C[i * colB + j]);
+            fprintf(FileC, "%0.10f\n", C_omp[i * colB + j]);
         }
     }
 
