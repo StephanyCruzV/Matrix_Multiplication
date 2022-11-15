@@ -3,7 +3,9 @@
 #include <time.h>
 #include <immintrin.h>
 
-// Compile command: 
+/* Compile command linux server : 
+ /usr/local/gcc9.3/bin/gcc -o Final ProyectoFinal.c
+*/
 
 #pragma warning(disable:4996)
 
@@ -51,7 +53,7 @@ int main()
     //Check if matrices are compatible for multiplication
     if (colA != rowB)
     {
-        printf("Error: Matrices not compatible for multiplication\n");
+        printf("Error: Dimensions not compatible for multiplication\n");
         exit(EXIT_SUCCESS);
     }
 
