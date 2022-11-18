@@ -12,6 +12,22 @@
 	/usr/local/gcc9.3/bin/gcc -o Final ProyectoFinal.c -O -ftree-vectorize -mavx512f -fopt-info-vec 
 */
 
+
+// Adding color mesagges functions
+
+void colorReset () {
+  printf("\033[0m");
+}
+
+void setRed () {
+  printf("\033[1;31m");
+}
+
+void setGreen () {
+  printf("\033[0;32m");
+}
+
+
 #pragma warning(disable:4996)
 
 int main()
@@ -32,15 +48,21 @@ int main()
 
     //Validate if files can be opened
     if (FileA == NULL) {
+	setRed();
         printf("Error: Couldn't open file matrizA.");
+	colorReset();
         return 1;
     }
     if (FileB == NULL) {
+	setRed();
         printf("Error: Couldn't open file matrizB.");
+	colorReset();
         return 1;
     }
     if (FileC == NULL) {
+	setRed();
         printf("Error: Couldn't open file matrizC.");
+	colorReset();
         return 1;
     }
 
@@ -58,7 +80,9 @@ int main()
     //Check if matrices are compatible for multiplication
     if (colA != rowB)
     {
+	setRed();
         printf("Error: Dimensions not compatible for multiplication\n");
+	colorReset();
         exit(EXIT_SUCCESS);
     }
 
@@ -70,7 +94,9 @@ int main()
     double* A = (double*)aligned_alloc(256,colA * rowA * sizeof(double));
     if (A == NULL)
     {
+	setRed();
         printf("Error: Not sufficent memory\n");
+	colorReset();
         free(A);
         exit(EXIT_SUCCESS);
     }
@@ -79,7 +105,9 @@ int main()
     double* B = (double*)aligned_alloc(256, colB * rowB * sizeof(double));
     if (B == NULL)
     {
+	setRed();
         printf("Error: Not sufficent memory\n");
+	colorReset();
         free(A);
         free(B);
         
@@ -90,7 +118,9 @@ int main()
     double* C = (double*)aligned_alloc(256, colB * rowA * sizeof(double));
     if (C == NULL)
     {
+	setRed();
         printf("Error: Not sufficent memor\n");
+	colorReset();
         free(A);
         free(B);
         free(C);
@@ -123,7 +153,9 @@ int main()
     //Exit if the file doesn't have the enough data to fill the desired matrix
     if (contA!=sizeA)
     {
-        printf("Not sufficent data to fill Matrix A\n");
+	setRed();
+        printf("Error : Not sufficent data to fill Matrix A\n");
+	colorReset();
         free(A);
         exit(EXIT_SUCCESS);
     }
@@ -153,7 +185,9 @@ int main()
     //Exit if the file doesn't have the enough data to fill the desired matrix
     if (contB!=sizeB)
     {
-        printf("Not sufficent data to fill Matrix B\n");
+	setRed();
+        printf("Error: Not sufficent data to fill Matrix B\n");
+	colorReset();
         free(A);
         free(B);
         exit(EXIT_SUCCESS);
@@ -182,7 +216,17 @@ int main()
     }
     
     //Save C matrix calculated with serial process
-    printf("\n Printing Matrix C ...\n");
+    printf("\n Serial Process Running ... \n");
+    printf("\n     Serial Process  -> ");
+    setGreen();
+    printf(" Successful \n");
+    colorReset();
+    printf("\n Saving C Matrix  ... \n");
+    printf("\n     matrizC.txt file  -> ");
+    setGreen();
+    printf(" Successful \n");
+    colorReset();
+
     for (int i = 0; i < rowA; i++)
     {
         //printf("\n");
@@ -254,11 +298,16 @@ int main()
     */
 
     if (vecCompare == 0) {
-        printf("Error: AutoVectorization Process Failes.");
+    	setRed();
+        printf("Error: AutoVectorization Process Failed.");
+    	colorReset();
         return 1;
     }
     else {
- 	printf("\n     Auto Vectorization Process -> Successful \n");
+ 	printf("\n     Auto Vectorization Process -> ");
+    	setGreen();
+    	printf(" Successful \n");
+    	colorReset();
     }
 
     printf("\n ");
