@@ -3,8 +3,13 @@
 #include <time.h>
 #include <immintrin.h>
 
-/* Compile command linux server : 
- /usr/local/gcc9.3/bin/gcc -o Final ProyectoFinal.c
+/* Compiling just serial command: 
+ 	/usr/local/gcc9.3/bin/gcc -o Final ProyectoFinal.c
+*/
+
+/* Compiling Serial + Autovec command:
+   This autovectorize with avx512  
+	/usr/local/gcc9.3/bin/gcc -o Final ProyectoFinal.c -O -ftree-vectorize -mavx512f -fopt-info-vec 
 */
 
 #pragma warning(disable:4996)
@@ -159,7 +164,7 @@ int main()
     ********************************************************** */
     clock_t start_t_secuencial[5] = { 0 };
     clock_t end_t_secuencial[5] = { 0 };
-    #pragma loop (no vector)
+
     for (int a = 0; a < 5; a++) {
         start_t_secuencial[a] = clock();
         for (int i = 0; i < rowA; i++)
@@ -167,15 +172,17 @@ int main()
             for (int j = 0; j < colB; j++)
             {
                 C[i * colB + j] = 0;
-                for (int k = 0; k < rowB; k++)
-                    C[i * colB + j] += (A[i * colA + k] * B[j * rowB + k]);
-            }
+                for (int k = 0; k < rowB; k++){
+                    C[i * colB + j] = C[i * colB + j] + (A[i * colA + k] * B[j * rowB + k]);
+		    __asm__("nop"); 
+            	}   
+	    }
         }
         end_t_secuencial[a] = clock();
     }
     
     //Save C matrix calculated with serial process
-    printf("\n Printing Matrix C \n");
+    printf("\n Printing Matrix C ...\n");
     for (int i = 0; i < rowA; i++)
     {
         //printf("\n");
@@ -193,26 +200,60 @@ int main()
         total_t_secuencial[a] = ((double)(end_t_secuencial[a] - start_t_secuencial[a])) / CLOCKS_PER_SEC;
         total_sec += total_t_secuencial[a];
 	}
-
-    /* *********************************************************
-                START INTRINSECS VECTORIZATION PROCESS
-    ********************************************************** */
     
-    /* ******* END INTRINSEC VECTORIZATION PROCESS ******* */
-
-
     double promedio_sec = total_sec / 5;
 
-    printf("CORRIDA     SERIAL      PARALELO1      PARALELO2 \n");
+    /* *********************************************************
+                START AUTO VECTORIZATION PROCESS
+    ********************************************************** */
+    clock_t start_t_int[5] = { 0 };
+    clock_t end_t_int[5] = { 0 };
+
+    for (int a = 0; a < 5; a++) {
+        start_t_int[a] = clock();
+        for (int i = 0; i < rowA; i++)
+        {
+            for (int j = 0; j < colB; j++)
+            {
+                C[i * colB + j] = 0;
+                for (int k = 0; k < rowB; k++){
+                    C[i * colB + j] = C[i * colB + j] + (A[i * colA + k] * B[j * rowB + k]);
+            	}   
+	    }
+        }
+        end_t_int[a] = clock();
+    }
+    
+    //Save C matrix calculated with serial process
+    printf("\n Comparing Matrix C with AutoVec results: \n");
+    	// Add comparation function
+    printf("\n ");
+
+    //Intrinsics average (calculo del promedio)
+    double total_int = 0;
+    double total_t_int[5] = { 0 };
+    for (int a = 0; a < 5; a++) {
+        total_t_int[a] = ((double)(end_t_int[a] - start_t_int[a])) / CLOCKS_PER_SEC;
+        total_int += total_t_int[a];
+	}
+    
+    double promedio_int = total_int / 5;
+    
+    /* ******* END AUTO  VECTORIZATION PROCESS ******* */
+
+    
+    printf("CORRIDA       SERIAL          AUTOVEC        PARALELO2 \n");
     for (int i = 0; i < 5; i++)
     {
-        printf("%d        %0.8f      %0.8f       %0.8f\n", i, total_t_secuencial[i]);
+        printf("    %d        %0.8f      %0.8f       %0.8f\n", i+1, total_t_secuencial[i], total_t_int[i], total_t_int[i]);
     }
-
-    printf("PROM:   %0.8f       %0.8f       %0.8f \n", promedio_sec);
     
-    printf("PercVsSerial:    -       %0.8f       %0.8f \n");
-
+    printf("********************************************************* \n");
+    printf("PROM:        %0.8f      %0.8f       %0.8f \n", promedio_sec, promedio_int, promedio_int);
+    
+    printf("\n BEST OPTIMIZATION:\n ");
+    printf("  compare proms to get result\n ");
+    printf("\n ");
 
     fclose(FileA);
     fclose(FileB);
@@ -220,7 +261,6 @@ int main()
     free(A);
     free(B);
     free(C);
-    
 
     return 0;
 
