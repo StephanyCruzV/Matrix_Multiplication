@@ -119,7 +119,7 @@ int main()
         }
     }
 	
-    printf("%d %d",contA,sizeA);
+    //printf("%d %d",contA,sizeA);
     //Exit if the file doesn't have the enough data to fill the desired matrix
     if (contA!=sizeA)
     {
@@ -206,6 +206,10 @@ int main()
     /* *********************************************************
                 START AUTO VECTORIZATION PROCESS
     ********************************************************** */
+    
+    //Declare AutoVec C matrix
+    double* autoC = (double*)aligned_alloc(256, colB * rowA * sizeof(double));
+    
     clock_t start_t_int[5] = { 0 };
     clock_t end_t_int[5] = { 0 };
 
@@ -215,9 +219,9 @@ int main()
         {
             for (int j = 0; j < colB; j++)
             {
-                C[i * colB + j] = 0;
+               autoC[i * colB + j] = 0;
                 for (int k = 0; k < rowB; k++){
-                    C[i * colB + j] = C[i * colB + j] + (A[i * colA + k] * B[j * rowB + k]);
+                   autoC[i * colB + j] = autoC[i * colB + j] + (A[i * colA + k] * B[j * rowB + k]);
             	}   
 	    }
         }
@@ -225,8 +229,39 @@ int main()
     }
     
     //Save C matrix calculated with serial process
-    printf("\n Comparing Matrix C with AutoVec results: \n");
-    	// Add comparation function
+    printf("\n Comparing Matrix C with AutoVec results ... \n");
+    // Add comparation function
+    int vecCompare = 1;
+    for (int i = 0; i < rowA; i++)
+    {
+        for (int j = 0; j < colB; j++) {
+            if (C[i * colB + j] == autoC[i * colB + j]){
+	    	vecCompare = 1;
+	    }
+	    else {
+		vecCompare = 0;
+		break;
+	    }
+        }
+    }
+
+    /*
+    // Verify auto vectorization results
+    for (int i = 0; i < 20; i++){
+   	printf("%0.10f          %0.10f \n" , C[i], autoC[i]);
+   	//printf("%0.10f \n" , autoC[i]);
+    }
+    */
+
+    if (vecCompare == 0) {
+        printf("Error: AutoVectorization Process Failes.");
+        return 1;
+    }
+    else {
+ 	printf("\n     Auto Vectorization Process -> Successful \n");
+    }
+
+    printf("\n ");
     printf("\n ");
 
     //Intrinsics average (calculo del promedio)
