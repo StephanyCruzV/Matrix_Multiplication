@@ -119,7 +119,7 @@ int main()
     if (C == NULL)
     {
 	setRed();
-        printf("Error: Not sufficent memor\n");
+        printf("Error: Not sufficent memory\n");
 	colorReset();
         free(A);
         free(B);
@@ -253,6 +253,17 @@ int main()
     
     //Declare AutoVec C matrix
     double* autoC = (double*)aligned_alloc(256, colB * rowA * sizeof(double));
+    if (autoC == NULL)
+    {
+	    setRed();
+        printf("Error: Not sufficent memory\n");
+	    colorReset();
+        free(A);
+        free(B);
+        free(C);
+        free(autoC);
+        exit(EXIT_SUCCESS);
+    }
     
     clock_t start_t_int[5] = { 0 };
     clock_t end_t_int[5] = { 0 };
@@ -325,6 +336,67 @@ int main()
     
     /* ******* END AUTO  VECTORIZATION PROCESS ******* */
 
+    /* *********************************************************
+                START OpenMP PROCESS
+    ********************************************************** */
+    double* C_omp = (double*)aligned_alloc(256, colB * rowA * sizeof(double));
+    if (C_omp == NULL)
+    {
+        printf("Not sufficent memory\n");
+        free(A);
+        free(B);
+        free(C);
+        free(autoC);
+        free(C_omp);
+        exit(EXIT_SUCCESS);
+    }
+
+    //OpenMp
+    clock_t start_t_open[5] = { 0 };
+    clock_t end_t_open[5] = { 0 };
+    int it=0;
+    it=(rowA*colB)/16;
+    for (int a = 0; a < 5; a++) {
+        start_t_open[a] = clock();
+        #pragma omp parallel num_threads(16)
+       {
+	    int idx,idy,lx,ly;
+	    int nextJump;
+   	    int thread;
+
+	    thread=omp_get_thread_num();
+            idx=(it*thread)/colB;
+            idy=(it*thread)%colB;
+
+            nextJump=it*(thread+1);
+	    
+	    lx=(nextJump/colB);
+            if(nextJump%colB==0){
+                ly=colB;
+            }
+            else{
+                ly=(nextJump%colB);
+            }
+            for (int i = idx; i < lx; i++)
+            {
+		int begJ;
+		if(i==idx)
+	            begJ=idy;
+	        else
+                    begJ=0;
+                for (int j=begJ; j < colB; j++)
+                {
+		    if((i+1)==lx && j==ly){
+			break;
+			}
+                    C_omp[i * colB + j] = 0;
+                    for (int k = 0; k < rowB; k++)
+                        C_omp[i * colB + j] += (A[i * colA + k] * B[j * rowB + k]);
+                }
+            }
+        }
+        end_t_open[a] = clock();
+    }
     
     printf("CORRIDA       SERIAL          AUTOVEC        PARALELO2 \n");
     for (int i = 0; i < 5; i++)
@@ -345,6 +417,8 @@ int main()
     free(A);
     free(B);
     free(C);
+    free(autoC);
+    free(C_omp);
 
     return 0;
 
