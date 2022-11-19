@@ -397,18 +397,71 @@ int main()
         }
         end_t_open[a] = clock();
     }
+
+    printf("\n Comparing Matrix C with OpenMP results ... \n");
+    // Add comparation function
+    int vecCompare = 1;
+    for (int i = 0; i < rowA; i++)
+    {
+        for (int j = 0; j < colB; j++) {
+            if (C[i * colB + j] == autoC[i * colB + j]){
+	    	vecCompare = 1;
+	    }
+	    else {
+		vecCompare = 0;
+		break;
+	    }
+        }
+    }
+
+
+    if (vecCompare == 0) {
+    	setRed();
+        printf("Error: OpenMP Process Failed.");
+    	colorReset();
+        return 1;
+    }
+    else {
+ 	printf("\n    Open MP Process -> ");
+    	setGreen();
+    	printf(" Successful \n");
+    	colorReset();
+    }
+
+    printf("\n ");
+    printf("\n ");
+
+    //Promedio openMP
+    double total_open = 0;
+    double total_t_open[5] = { 0 };
+    for (int a = 0; a < 5; a++) {
+        total_t_open[a] = ((double)(end_t_open[a] - start_t_open[a])) / CLOCKS_PER_SEC;
+        total_open += total_t_open[a];
+    }
+
+    double promedio_open = total_open / 5;
     
     printf("CORRIDA       SERIAL          AUTOVEC        PARALELO2 \n");
     for (int i = 0; i < 5; i++)
     {
-        printf("    %d        %0.8f      %0.8f       %0.8f\n", i+1, total_t_secuencial[i], total_t_int[i], total_t_int[i]);
+        printf("    %d        %0.8f      %0.8f       %0.8f\n", i+1, total_t_secuencial[i], total_t_int[i], total_t_open[i]);
     }
     
     printf("********************************************************* \n");
-    printf("PROM:        %0.8f      %0.8f       %0.8f \n", promedio_sec, promedio_int, promedio_int);
+    printf("PROM:        %0.8f      %0.8f       %0.8f \n", promedio_sec, promedio_int, promedio_open);
     
     printf("\n BEST OPTIMIZATION:\n ");
-    printf("  compare proms to get result\n ");
+    //printf("  compare proms to get result\n ");
+    if (promedio_sec > promedio_int || promedio_sec > promedio_open) {
+        if (promedio_int > promedio_open)
+            printf("OpenMP es el metodo mas rapido\n");
+        else
+            printf("La autovectorizacion es el metodo mas rapido\n");
+    }
+    else
+    {
+        printf("La ejecucion serial se mantiene como la mas rapida");
+    }
     printf("\n ");
 
     fclose(FileA);
