@@ -410,7 +410,7 @@ int main()
 
     printf("\n Comparing Matrix C with OpenMP results ... \n");
     // Add comparation function
-    int vecCompare = 1;
+    vecCompare = 1;
     for (int i = 0; i < rowA; i++)
     {
         for (int j = 0; j < colB; j++) {
