@@ -12,6 +12,11 @@
 	/usr/local/gcc9.3/bin/gcc -o Final ProyectoFinal.c -O -ftree-vectorize -mavx512f -fopt-info-vec 
 */
 
+/* Compiling Serial + Autovec command:
+   This autovectorize with avx512  
+	/usr/local/gcc9.3/bin/gcc -o Final ProyectoFinal.c -O -ftree-vectorize -mavx512f -fopt-info-vec -fopenmp
+*/
+
 
 // Adding color mesagges functions
 
