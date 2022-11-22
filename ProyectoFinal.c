@@ -287,9 +287,12 @@ int main()
     printf("\n Comparing Matrix C with AutoVec results ... \n");
     // Add comparation function
     int vecCompare = 1;
+
     for (int i = 0; i < rowA; i++)
     {
         for (int j = 0; j < colB; j++) {
+    	    // Test if comparations is made correctly
+            //autoC[i*colB+j] = 2.10;
             if (C[i * colB + j] == autoC[i * colB + j]){
 	    	vecCompare = 1;
 	    }
@@ -310,8 +313,9 @@ int main()
 
     if (vecCompare == 0) {
     	setRed();
-        printf("Error: AutoVectorization Process Failed.");
+        printf("       Error: AutoVectorization Process Failed.\n");
     	colorReset();
+        printf("\n ");
         return 1;
     }
     else {
