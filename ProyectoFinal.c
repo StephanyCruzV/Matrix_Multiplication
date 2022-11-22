@@ -410,22 +410,22 @@ int main()
 
     printf("\n Comparing Matrix C with OpenMP results ... \n");
     // Add comparation function
-    vecCompare = 1;
+    ompCompare = 1;
     for (int i = 0; i < rowA; i++)
     {
         for (int j = 0; j < colB; j++) {
-            if (C[i * colB + j] == autoC[i * colB + j]){
-	    	vecCompare = 1;
+            if (C[i * colB + j] == C_omp[i * colB + j]){
+	    	ompCompare = 1;
 	    }
 	    else {
-		vecCompare = 0;
+		ompCompare = 0;
 		break;
 	    }
         }
     }
 
 
-    if (vecCompare == 0) {
+    if (ompCompare == 0) {
     	setRed();
         printf("Error: OpenMP Process Failed.");
     	colorReset();
@@ -461,16 +461,17 @@ int main()
     printf("PROM:        %0.8f      %0.8f       %0.8f \n", promedio_sec, promedio_int, promedio_open);
     
     printf("\n BEST OPTIMIZATION:\n ");
+    printf("\n ");
     //printf("  compare proms to get result\n ");
     if (promedio_sec > promedio_int || promedio_sec > promedio_open) {
         if (promedio_int > promedio_open)
-            printf("OpenMP es el metodo mas rapido\n");
+            printf("OpenMP is the fastest method!\n");
         else
-            printf("La autovectorizacion es el metodo mas rapido\n");
+            printf("Autovectorization has the fastest results!\n");
     }
     else
     {
-        printf("La ejecucion serial se mantiene como la mas rapida");
+        printf("The serial process has the fastest results!");
     }
     printf("\n ");
 
