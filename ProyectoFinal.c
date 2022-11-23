@@ -412,26 +412,22 @@ int main()
 
     printf("Comparing Matrix C with OpenMP results ... \n");
     // Add comparation function
-<<<<<<< HEAD
-    vecCompare = 1;
-=======
     int ompCompare = 1;
->>>>>>> steph
     for (int i = 0; i < rowA; i++)
     {
         for (int j = 0; j < colB; j++) {
-            if (C[i * colB + j] == autoC[i * colB + j]){
-	    	vecCompare = 1;
+            if (C[i * colB + j] == C_omp[i * colB + j]){
+	    	ompCompare = 1;
 	    }
 	    else {
-		vecCompare = 0;
+		ompCompare = 0;
 		break;
 	    }
         }
     }
 
 
-    if (vecCompare == 0) {
+    if (ompCompare == 0) {
     	setRed();
         printf("Error: OpenMP Process Failed.");
     	colorReset();
@@ -452,10 +448,7 @@ int main()
     double total_t_open[5] = { 0 };
     for (int a = 0; a < 5; a++) {
         total_t_open[a] = ((double)(end_t_open[a] - start_t_open[a])) / CLOCKS_PER_SEC;
-<<<<<<< HEAD
-=======
 	// Divide time /16 because there are 16 threads
->>>>>>> steph
         total_t_open[a] = total_t_open[a]/16;
         total_open += total_t_open[a];
     }
@@ -472,21 +465,8 @@ int main()
     
     printf("********************************************************* \n");
     printf("PROM:        %0.8f      %0.8f       %0.8f \n", promedio_sec, promedio_int, promedio_open);
-<<<<<<< HEAD
-    
-    printf("\n BEST OPTIMIZATION:\n ");
-    //printf("  compare proms to get result\n ");
-    if (promedio_sec > promedio_int || promedio_sec > promedio_open) {
-        if (promedio_int > promedio_open)
-            printf("OpenMP es el metodo mas rapido\n");
-        else
-            printf("La autovectorizacion es el metodo mas rapido\n");
-    }
-    else
-    {
-        printf("La ejecucion serial se mantiene como la mas rapida");
-=======
     printf("\n ");
+    
     
     printf("\n BEST OPTIMIZATION     ->      ");
     
@@ -501,7 +481,6 @@ int main()
     else
     {
         printf("SERIAL");
->>>>>>> steph
     }
     colorReset();
     printf("\n ");
