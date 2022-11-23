@@ -14,7 +14,7 @@ Authors:    Stephany Judith Cruz Vazquez     |       Marco Aurelio Cepeda Trevi�
   
   Para la autovectorización se hara uso de las banderas del compilador, se esta haciendo uso de gcc con autovectorización avx512, además se activa la bandera "-fopt-info-vec" la cual nos permite validar que partes se han autovectorizado.
   
-  En cuanto a ...
+  En cuanto a la optimización con OMP, se hace uso de 16 threads para realizar las multiplicaciones de matrices.
   
   Para ambos metodos se valida que la matriz obtenida sea la correcta, y muestra un mensaje al hacer dichas validaciones.
   
