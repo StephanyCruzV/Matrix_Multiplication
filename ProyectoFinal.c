@@ -408,7 +408,7 @@ int main()
         end_t_open[a] = clock();
     }
 
-    printf("\n Comparing Matrix C with OpenMP results ... \n");
+    printf("Comparing Matrix C with OpenMP results ... \n");
     // Add comparation function
     int ompCompare = 1;
     for (int i = 0; i < rowA; i++)
@@ -446,6 +446,8 @@ int main()
     double total_t_open[5] = { 0 };
     for (int a = 0; a < 5; a++) {
         total_t_open[a] = ((double)(end_t_open[a] - start_t_open[a])) / CLOCKS_PER_SEC;
+	// Divide time /16 because there are 16 threads
+        total_t_open[a] = total_t_open[a]/16;
         total_open += total_t_open[a];
     }
 
