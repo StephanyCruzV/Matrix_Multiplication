@@ -4,16 +4,8 @@
 #include <time.h>
 #include <immintrin.h>
 
-/* Compiling just serial command: 
- 	/usr/local/gcc9.3/bin/gcc -o Final ProyectoFinal.c
-*/
 
-/* Compiling Serial + Autovec command:
-   This autovectorize with avx512  
-	/usr/local/gcc9.3/bin/gcc -o Final ProyectoFinal.c -O -ftree-vectorize -mavx512f -fopt-info-vec 
-*/
-
-/* Compiling Serial + Autovec command:
+/* Compiling Serial + Autovec + OMP command:
    This autovectorize with avx512  
 	/usr/local/gcc9.3/bin/gcc -o Final ProyectoFinal.c -O -ftree-vectorize -mavx512f -fopt-info-vec -fopenmp
 */
@@ -31,6 +23,10 @@ void setRed () {
 
 void setGreen () {
   printf("\033[0;32m");
+}
+
+void setBlue () {
+  printf("\033[0;36m");
 }
 
 
@@ -408,9 +404,9 @@ int main()
         end_t_open[a] = clock();
     }
 
-    printf("\n Comparing Matrix C with OpenMP results ... \n");
+    printf("Comparing Matrix C with OpenMP results ... \n");
     // Add comparation function
-    ompCompare = 1;
+    int ompCompare = 1;
     for (int i = 0; i < rowA; i++)
     {
         for (int j = 0; j < colB; j++) {
@@ -452,7 +448,9 @@ int main()
 
     double promedio_open = total_open / 5;
     
-    printf("CORRIDA       SERIAL          AUTOVEC        PARALELO2 \n");
+    setBlue();
+    printf("CORRIDA       SERIAL          AUTOVEC            OMP   \n");
+    colorReset();
     for (int i = 0; i < 5; i++)
     {
         printf("    %d        %0.8f      %0.8f       %0.8f\n", i+1, total_t_secuencial[i], total_t_int[i], total_t_open[i]);
@@ -460,20 +458,23 @@ int main()
     
     printf("********************************************************* \n");
     printf("PROM:        %0.8f      %0.8f       %0.8f \n", promedio_sec, promedio_int, promedio_open);
-    
-    printf("\n BEST OPTIMIZATION:\n ");
     printf("\n ");
+    
+    printf("\n BEST OPTIMIZATION    ->      ");
     //printf("  compare proms to get result\n ");
+    setGreen();
     if (promedio_sec > promedio_int || promedio_sec > promedio_open) {
         if (promedio_int > promedio_open)
-            printf("OpenMP is the fastest method!\n");
+            printf("OpenMP \n");
         else
-            printf("Autovectorization has the fastest results!\n");
+            printf("AUTO-VECTORIZATION \n");
     }
     else
     {
-        printf("The serial process has the fastest results!");
+        printf("SERIAL");
     }
+    colorReset();
+    printf("\n ");
     printf("\n ");
 
     fclose(FileA);
