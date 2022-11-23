@@ -446,6 +446,7 @@ int main()
     double total_t_open[5] = { 0 };
     for (int a = 0; a < 5; a++) {
         total_t_open[a] = ((double)(end_t_open[a] - start_t_open[a])) / CLOCKS_PER_SEC;
+        total_t_open[a]=total_t_open[a]/16;
         total_open += total_t_open[a];
     }
 
