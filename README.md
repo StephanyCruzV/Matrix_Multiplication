@@ -24,7 +24,7 @@ Authors:    Stephany Judith Cruz Vazquez     |       Marco Aurelio Cepeda Trevi√
 
   Para poder correr el c√≥digo es necesario correr el siguiente comando:
     
-    /usr/local/gcc9.3/bin/gcc -o Final ProyectoFinal.c -O -ftree-vectorize -mavx512f -fopt-info-vec
+    /usr/local/gcc9.3/bin/gcc -o Final ProyectoFinal.c -O -ftree-vectorize -mavx512f -fopt-info-vec -fopenmp
 
 
 ### RESTRICCIONES
