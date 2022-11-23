@@ -1,6 +1,5 @@
 #include<stdio.h>
 #include<stdlib.h>
-#include <windows.h>
 #include <omp.h>
 #include <time.h>
 #include <immintrin.h>
@@ -204,7 +203,6 @@ int main()
     clock_t end_t_secuencial[5] = { 0 };
     int finalP=5;
     printf("\n Serial Process Running ... \n");   
-    DoProgress( "Progress: ",0,finalP );    
 
     for (int a = 0; a < 5; a++) {
         start_t_secuencial[a] = clock();
@@ -220,8 +218,6 @@ int main()
 	    }
         }
         end_t_secuencial[a] = clock();
-        DoProgress( "Progress: ", a+1, finalP );
-        printf("%c", b);
     }
     
     //Save C matrix calculated with serial process
