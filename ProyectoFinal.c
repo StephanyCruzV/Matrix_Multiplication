@@ -26,30 +26,8 @@ void setGreen () {
   printf("\033[0;32m");
 }
 
-<<<<<<< HEAD
-void DoProgress( char label[], int step, int total )
-{
-    const int pwidth = 72;
-
-    int width = pwidth - strlen( label );
-    int pos = ( step * width ) / total ;
-
-    
-    int percent = ( step * 100 ) / total;
-
-    SetConsoleTextAttribute(  GetStdHandle( STD_OUTPUT_HANDLE ), FOREGROUND_GREEN );
-    printf( "%s[", label );
-
-    for ( int i = 0; i < pos; i++ )  printf( "%c", '=' );
-
-    printf( "% *c", width - pos + 1, ']' );
-    printf( " %3d%%\r", percent );
-
-    SetConsoleTextAttribute(  GetStdHandle( STD_OUTPUT_HANDLE ), 0x08 );
-=======
 void setBlue () {
   printf("\033[0;36m");
->>>>>>> steph
 }
 
 
