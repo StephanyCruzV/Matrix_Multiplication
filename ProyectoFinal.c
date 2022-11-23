@@ -5,14 +5,6 @@
 #include <time.h>
 #include <immintrin.h>
 
-/* Compiling just serial command: 
- 	/usr/local/gcc9.3/bin/gcc -o Final ProyectoFinal.c
-*/
-
-/* Compiling Serial + Autovec command:
-   This autovectorize with avx512  
-	/usr/local/gcc9.3/bin/gcc -o Final ProyectoFinal.c -O -ftree-vectorize -mavx512f -fopt-info-vec 
-*/
 
 /* Compiling Serial + Autovec command:
    This autovectorize with avx512  
@@ -34,6 +26,7 @@ void setGreen () {
   printf("\033[0;32m");
 }
 
+<<<<<<< HEAD
 void DoProgress( char label[], int step, int total )
 {
     const int pwidth = 72;
@@ -53,6 +46,10 @@ void DoProgress( char label[], int step, int total )
     printf( " %3d%%\r", percent );
 
     SetConsoleTextAttribute(  GetStdHandle( STD_OUTPUT_HANDLE ), 0x08 );
+=======
+void setBlue () {
+  printf("\033[0;36m");
+>>>>>>> steph
 }
 
 
@@ -435,9 +432,13 @@ int main()
         end_t_open[a] = clock();
     }
 
-    printf("\n Comparing Matrix C with OpenMP results ... \n");
+    printf("Comparing Matrix C with OpenMP results ... \n");
     // Add comparation function
+<<<<<<< HEAD
     vecCompare = 1;
+=======
+    int ompCompare = 1;
+>>>>>>> steph
     for (int i = 0; i < rowA; i++)
     {
         for (int j = 0; j < colB; j++) {
@@ -473,13 +474,19 @@ int main()
     double total_t_open[5] = { 0 };
     for (int a = 0; a < 5; a++) {
         total_t_open[a] = ((double)(end_t_open[a] - start_t_open[a])) / CLOCKS_PER_SEC;
+<<<<<<< HEAD
+=======
+	// Divide time /16 because there are 16 threads
+>>>>>>> steph
         total_t_open[a] = total_t_open[a]/16;
         total_open += total_t_open[a];
     }
 
     double promedio_open = total_open / 5;
-    
-    printf("CORRIDA       SERIAL          AUTOVEC        PARALELO2 \n");
+   
+    setBlue();
+    printf("CORRIDA       SERIAL          AUTOVEC            OMP \n");
+    colorReset();
     for (int i = 0; i < 5; i++)
     {
         printf("    %d        %0.8f      %0.8f       %0.8f\n", i+1, total_t_secuencial[i], total_t_int[i], total_t_open[i]);
@@ -487,6 +494,7 @@ int main()
     
     printf("********************************************************* \n");
     printf("PROM:        %0.8f      %0.8f       %0.8f \n", promedio_sec, promedio_int, promedio_open);
+<<<<<<< HEAD
     
     printf("\n BEST OPTIMIZATION:\n ");
     //printf("  compare proms to get result\n ");
@@ -499,7 +507,25 @@ int main()
     else
     {
         printf("La ejecucion serial se mantiene como la mas rapida");
+=======
+    printf("\n ");
+    
+    printf("\n BEST OPTIMIZATION     ->      ");
+    
+    setGreen();
+    //printf("  compare proms to get result\n ");
+    if (promedio_sec > promedio_int || promedio_sec > promedio_open) {
+        if (promedio_int > promedio_open)
+            printf("OpenMP\n");
+        else
+            printf("AUTO-VECTORIZATION\n");
     }
+    else
+    {
+        printf("SERIAL");
+>>>>>>> steph
+    }
+    colorReset();
     printf("\n ");
 
     fclose(FileA);
