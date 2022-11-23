@@ -1,11 +1,20 @@
 #include<stdio.h>
 #include<stdlib.h>
+#include <windows.h>
 #include <omp.h>
 #include <time.h>
 #include <immintrin.h>
 
+/* Compiling just serial command: 
+ 	/usr/local/gcc9.3/bin/gcc -o Final ProyectoFinal.c
+*/
 
-/* Compiling Serial + Autovec + OMP command:
+/* Compiling Serial + Autovec command:
+   This autovectorize with avx512  
+	/usr/local/gcc9.3/bin/gcc -o Final ProyectoFinal.c -O -ftree-vectorize -mavx512f -fopt-info-vec 
+*/
+
+/* Compiling Serial + Autovec command:
    This autovectorize with avx512  
 	/usr/local/gcc9.3/bin/gcc -o Final ProyectoFinal.c -O -ftree-vectorize -mavx512f -fopt-info-vec -fopenmp
 */
@@ -25,8 +34,25 @@ void setGreen () {
   printf("\033[0;32m");
 }
 
-void setBlue () {
-  printf("\033[0;36m");
+void DoProgress( char label[], int step, int total )
+{
+    const int pwidth = 72;
+
+    int width = pwidth - strlen( label );
+    int pos = ( step * width ) / total ;
+
+    
+    int percent = ( step * 100 ) / total;
+
+    SetConsoleTextAttribute(  GetStdHandle( STD_OUTPUT_HANDLE ), FOREGROUND_GREEN );
+    printf( "%s[", label );
+
+    for ( int i = 0; i < pos; i++ )  printf( "%c", '=' );
+
+    printf( "% *c", width - pos + 1, ']' );
+    printf( " %3d%%\r", percent );
+
+    SetConsoleTextAttribute(  GetStdHandle( STD_OUTPUT_HANDLE ), 0x08 );
 }
 
 
@@ -37,6 +63,7 @@ int main()
     //Declare general variables
     int rowA, colA,rowB, colB;
     int sizeA = 0, sizeB = 0, sizeC = 0;
+    char f = 177, b = 219;
 
     //Files to be used
     FILE* FileA;
@@ -200,6 +227,9 @@ int main()
     ********************************************************** */
     clock_t start_t_secuencial[5] = { 0 };
     clock_t end_t_secuencial[5] = { 0 };
+    int finalP=5;
+    printf("\n Serial Process Running ... \n");   
+    DoProgress( "Progress: ",0,finalP );    
 
     for (int a = 0; a < 5; a++) {
         start_t_secuencial[a] = clock();
@@ -215,10 +245,11 @@ int main()
 	    }
         }
         end_t_secuencial[a] = clock();
+        DoProgress( "Progress: ", a+1, finalP );
+        printf("%c", b);
     }
     
     //Save C matrix calculated with serial process
-    printf("\n Serial Process Running ... \n");
     printf("\n     Serial Process  -> ");
     setGreen();
     printf(" Successful \n");
@@ -404,24 +435,24 @@ int main()
         end_t_open[a] = clock();
     }
 
-    printf("Comparing Matrix C with OpenMP results ... \n");
+    printf("\n Comparing Matrix C with OpenMP results ... \n");
     // Add comparation function
-    int ompCompare = 1;
+    vecCompare = 1;
     for (int i = 0; i < rowA; i++)
     {
         for (int j = 0; j < colB; j++) {
-            if (C[i * colB + j] == C_omp[i * colB + j]){
-	    	ompCompare = 1;
+            if (C[i * colB + j] == autoC[i * colB + j]){
+	    	vecCompare = 1;
 	    }
 	    else {
-		ompCompare = 0;
+		vecCompare = 0;
 		break;
 	    }
         }
     }
 
 
-    if (ompCompare == 0) {
+    if (vecCompare == 0) {
     	setRed();
         printf("Error: OpenMP Process Failed.");
     	colorReset();
@@ -442,15 +473,13 @@ int main()
     double total_t_open[5] = { 0 };
     for (int a = 0; a < 5; a++) {
         total_t_open[a] = ((double)(end_t_open[a] - start_t_open[a])) / CLOCKS_PER_SEC;
-        total_t_open[a]=total_t_open[a]/16;
+        total_t_open[a] = total_t_open[a]/16;
         total_open += total_t_open[a];
     }
 
     double promedio_open = total_open / 5;
     
-    setBlue();
-    printf("CORRIDA       SERIAL          AUTOVEC            OMP   \n");
-    colorReset();
+    printf("CORRIDA       SERIAL          AUTOVEC        PARALELO2 \n");
     for (int i = 0; i < 5; i++)
     {
         printf("    %d        %0.8f      %0.8f       %0.8f\n", i+1, total_t_secuencial[i], total_t_int[i], total_t_open[i]);
@@ -458,23 +487,19 @@ int main()
     
     printf("********************************************************* \n");
     printf("PROM:        %0.8f      %0.8f       %0.8f \n", promedio_sec, promedio_int, promedio_open);
-    printf("\n ");
     
-    printf("\n BEST OPTIMIZATION    ->      ");
+    printf("\n BEST OPTIMIZATION:\n ");
     //printf("  compare proms to get result\n ");
-    setGreen();
     if (promedio_sec > promedio_int || promedio_sec > promedio_open) {
         if (promedio_int > promedio_open)
-            printf("OpenMP \n");
+            printf("OpenMP es el metodo mas rapido\n");
         else
-            printf("AUTO-VECTORIZATION \n");
+            printf("La autovectorizacion es el metodo mas rapido\n");
     }
     else
     {
-        printf("SERIAL");
+        printf("La ejecucion serial se mantiene como la mas rapida");
     }
-    colorReset();
-    printf("\n ");
     printf("\n ");
 
     fclose(FileA);
